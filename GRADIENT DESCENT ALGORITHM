@@ -1,0 +1,71 @@
+clear all
+clc
+q = [0;0.5];
+qf = [100*pi/180;1];
+
+o2f = [qf(2)*sin(qf(1));-qf(2)*cos(qf(1))];
+e = 0.1;
+n = 0.1;
+la = 10;
+b = [0.4;-0.3];
+rho_not = 0.5;
+Q = [];
+alpha = 0.01;
+l2 = 1.5;
+F_R = [];
+i = 0;
+I = [];
+X = [];
+X1 = [];
+Y1 = [];
+X2 = [];
+Y2 = [];
+while norm(q-qf) >0.01
+    x = norm(q-qf);
+    X = [X x];
+    o2 = [q(2)*sin(q(1));-q(2)*cos(q(1))];
+    f_a = -la*(o2 - o2f);
+    
+    rho = norm(o2 -b);
+    del_rho = (o2-b)/rho;
+    if rho<=rho_not
+        f_r = n*((1/rho) - (1/rho_not))*(1/rho^2).*del_rho;
+    else
+        f_r = [0;0];
+    end
+    F_R = [F_R f_r];
+    j = [q(2)*cos(q(1)) sin(q(1));q(2)*sin(q(1)) -cos(q(1))];
+    tor = transpose(j)*f_a + transpose(j)*f_r ;
+%     Q = [Q q];   % for plotting difference between initial and final configuration
+%       i = i+1;
+%       I = [I i];
+%       figure(1)
+%       clf
+%       plot(I(1,:),X(1,:))
+    if q(2)<=0
+        q(2) = 0.07;
+    end
+    
+         
+      
+    
+    x2 = q(2)*cos(q(1)-(pi/2));
+    x1 = -(l2 - q(2))*cos(q(1)-(pi/2));
+    y1 = -(l2 - q(2))*sin(q(1)-(pi/2));
+    y2 = q(2)*sin(q(1)-(pi/2));
+    X1 = [X1 x1];
+    Y1 = [Y1 y1];
+
+
+    X2 = [X2 x2];
+    Y2 = [Y2 y2];
+    figure(1)
+    clf
+    plot([x1 x2],[y1 y2],X1(1,:),Y1(1,:),X2(1,:),Y2(1,:))
+    hold on
+    scatter(b(1),b(2),'*')
+    axis equal
+    axis([-3 3 -2 3])
+    grid on
+    q = q + alpha.*(tor/norm(tor)); 
+end
